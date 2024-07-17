@@ -19,6 +19,15 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.postgresql:postgresql'
+
+	implementation 'io.debezium:debezium-core:2.7.0.Final'
+	implementation 'io.debezium:debezium-connector-postgres:2.7.0.Final'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.apache.kafka:connect-api:3.0.0'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
