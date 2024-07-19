@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Добавление настройки
 add_config() {
   local config="$1"
