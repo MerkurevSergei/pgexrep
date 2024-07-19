@@ -1,6 +1,6 @@
 package com.github.merkurevsergei.pgexrep;
 
-import io.debezium.connector.postgresql.connection.pgoutput.PgOutputMessageDecoder;
+import com.github.merkurevsergei.pgexrep.decoder.pgoutput.PgOutput;
 import jakarta.annotation.PostConstruct;
 import org.postgresql.PGConnection;
 import org.postgresql.PGProperty;
