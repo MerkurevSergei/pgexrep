@@ -1,9 +1,14 @@
-package com.github.merkurevsergei.pgexrep;
+package com.github.merkurevsergei.pgexrep.decoder.pgoutput;
 
+import io.debezium.connector.postgresql.PostgresType;
+import io.debezium.connector.postgresql.connection.pgoutput.ColumnMetaData;
+import io.debezium.util.Strings;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
+import java.util.LinkedHashMap;
+import java.util.Optional;
 
 public class PgOutput {
     ByteBuffer buffer;
@@ -15,6 +20,8 @@ public class PgOutput {
 
         byte cmd = buffer.get();
         switch (cmd) {
+            case 'Y':
+                System.out.println("TYPE:");
             case 'B':
                 nanoTime = System.nanoTime();
                 System.out.println("Begin Issued: " + nanoTime);
@@ -54,6 +61,35 @@ public class PgOutput {
                 char isNew = (char)buffer.get();
                 getTuple(buffer, sb);
                 return sb.toString();
+            case 'R':
+                System.out.println("RELATION:");
+                // oid of relation that is being inserted
+                LinkedHashMap<String, String> relationInfo = new LinkedHashMap<>();
+                oid = buffer.getInt();
+                String schemaName = readString(buffer);
+                String tableName = readString(buffer);
+                int replicaIdentityId = buffer.get();
+                short columnCount = buffer.getShort();
+
+                relationInfo.put("Oid", String.valueOf(oid));
+                relationInfo.put("schemaName", schemaName);
+                relationInfo.put("tableName", tableName);
+                relationInfo.put("replicaIdentityId", String.valueOf(replicaIdentityId));
+                relationInfo.put("columnCount", String.valueOf(columnCount));
+
+                for (short i = 0; i < columnCount; ++i) {
+                    byte flags = buffer.get();
+                    String columnName = Strings.unquoteIdentifierPart(readString(buffer));
+                    int columnType = buffer.getInt();
+                    int attypmod = buffer.getInt();
+
+                    LinkedHashMap<String, String> column = new LinkedHashMap<>();
+                    column.put("flags", String.valueOf(flags));
+                    column.put("columnType", String.valueOf(columnType));
+                    column.put("attypmod", String.valueOf(attypmod));
+                    relationInfo.put(columnName, column.toString());
+                }
+                return relationInfo.toString();
         }
         return "";
     }
@@ -90,6 +126,21 @@ public class PgOutput {
                 break;
             }
             sb.append((char)c);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Reads the replication stream up to the next null-terminator byte and returns the contents as a string.
+     *
+     * @param buffer The replication stream buffer
+     * @return string read from the replication stream
+     */
+    private static String readString(ByteBuffer buffer) {
+        StringBuilder sb = new StringBuilder();
+        byte b = 0;
+        while ((b = buffer.get()) != 0) {
+            sb.append((char) b);
         }
         return sb.toString();
     }
