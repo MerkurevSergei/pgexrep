@@ -1,6 +1,7 @@
 package com.github.merkurevsergei.pgexrep;
 
 import com.github.merkurevsergei.pgexrep.decoder.pgoutput.PgOutput;
+import com.github.merkurevsergei.pgexrep.metadata.PostgresSchema;
 import jakarta.annotation.PostConstruct;
 import org.postgresql.PGConnection;
 import org.postgresql.PGProperty;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -118,6 +120,9 @@ public class LogicalReplicationExample {
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
 
         Connection con = DriverManager.getConnection(url, props);
+        DatabaseMetaData metadata = con.getMetaData();
+        PostgresSchema postgresSchema = new PostgresSchema();
+        postgresSchema.refresh(metadata);
         PGConnection replConnection = con.unwrap(PGConnection.class);
 
         PGReplicationStream stream =
