@@ -12,7 +12,7 @@ public class PostgresSchema {
     private final List<TableId> tableIds = new ArrayList<>();
 
     public void refresh(DatabaseMetaData metadata) {
-        try (ResultSet rs = metadata.getTables(null, null, null, new String[]{"VIEW", "MATERIALIZED VIEW", "TABLE"})) {
+        try (ResultSet rs = metadata.getTables(null, null, null, null)) {
             try {
                 while (rs.next()) {
                     final String catalogName = rs.getString(1);
