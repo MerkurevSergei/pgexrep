@@ -5,11 +5,16 @@
  */
 package com.github.merkurevsergei.pgexrep.metadata;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 record Table(TableId id, List<Column> columnDefs, List<String> pkColumnNames, String defaultCharsetName, String comment,
              List<Attribute> attributes) {
+
+    Table(TableId id) {
+        this(id, new ArrayList<>(), new ArrayList<>(), "UTF-8", "", new ArrayList<>());
+    }
 
     public List<String> retrieveColumnNames() {
         return columnDefs.stream()

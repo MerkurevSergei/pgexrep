@@ -5,6 +5,7 @@
  */
 package com.github.merkurevsergei.pgexrep.metadata;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,15 @@ public final class Tables {
                           String defaultCharsetName, List<Attribute> attributes) {
         Table newTable = new Table(tableId, columnDefs, primaryKeyColumnNames, defaultCharsetName, "", attributes);
         return tablesById.put(tableId, newTable);
+    }
+
+    public Table addTable(TableId tableId) {
+        Table newTable = new Table(tableId);
+        return tablesById.put(tableId, newTable);
+    }
+
+    public Collection<Table> getTables() {
+        return tablesById.values();
     }
 
     /**
